@@ -6,11 +6,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private val formulaBuilder = StringBuilder()
+    private val formulaBuilder = FormulaBuilder()
 
-    fun appendFormula(char: Char) {
+    private val resultTextView by lazy { findViewById<TextView>(R.id.text_result) }
+
+    private fun appendFormula(char: Char) {
         formulaBuilder.append(char)
-        findViewById<TextView>(R.id.text_result).text = formulaBuilder.toString()
+        resultTextView.text = formulaBuilder.toString()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,18 +34,21 @@ class MainActivity : AppCompatActivity() {
                 appendFormula(char)
             }
         }
-        val operator = mapOf(
+        mapOf(
             R.id.button_plus to '+',
             R.id.button_minus to '-',
             R.id.button_multiply to '*',
-            R.id.button_divide to '/',
-            R.id.button_point to '.'
-        )
-        operator.forEach { (id, char) ->
+            R.id.button_divide to '/'
+        ).forEach { (id, char) ->
             findViewById<Button>(id).setOnClickListener {
-                if (formulaBuilder.lastOrNull() !in operator.values) {
+                if (formulaBuilder.isLast(FormulaElement.Number)) {
                     appendFormula(char)
                 }
+            }
+        }
+        findViewById<Button>(R.id.button_point).setOnClickListener {
+            if (formulaBuilder.toString().lastOrNull() != '.') {
+                appendFormula('.')
             }
         }
     }
